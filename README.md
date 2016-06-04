@@ -1,2 +1,0 @@
-# visualising-haze-in-singapore
-
