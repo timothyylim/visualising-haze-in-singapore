@@ -1,0 +1,107 @@
+---
+title: "haze_chart"
+output: html_document
+---
+
+```{r}
+df <- read.csv("~timothylim/Desktop/psi-data.csv")
+keeps <- c("hour","reading","date")
+df <- df[keeps]
+head(df)
+df$time <- strptime(as.character(df$date), "%m/%d/%y") + 60 * 60 * df$hour
+head(df)
+plot(reading ~ time, data=df)
+df_test_june <- subset(df, time >= "2015-06-01 00:00:00")
+plot(reading ~ time, data=df_test_june)
+
+head(df_test)
+class(df_test$time)
+dput(df_test)
+
+```
+
+
+```{r}
+library(zoo)
+temp.zoo<-zoo(df_test$reading,df_test$time)
+m.av<-rollmean(temp.zoo, 240,fill = list(NA, NULL, NA))
+df_test1$amb.av=coredata(m.av)
+p <- ggplot(df_test, aes(time, reading))
+p + geom_point(alpha = 1/4, colour = "white")+
+  geom_line(aes(time,amb.av),color="black") 
+```
+
+
+```{r}
+library(ggplot2)
+library(scales)
+p <- ggplot(df_test1, aes(time, reading))
+p <- p + geom_point(alpha = 1/4, colour = "#ff7f98")
+p <- p + geom_line(aes(time,amb.av),color="#7F0019",size=1) + scale_x_date(breaks="month", labels=date_format("%b"))+
+  theme(axis.line = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank(),
+    axis.ticks.x=element_blank(),
+    plot.background = element_rect(fill = "#FAF7EB"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank())
+
+ggsave(file="test1.svg", plot=p, width=10, height=8)
+
+
+p <- ggplot(df_test1, aes(time, reading))
+p + geom_point(alpha = 1/4)+scale_x_date(breaks="month", labels=date_format("%b"))
+
+  
+
+
+
+
+
+
+ggplot(df_test1, aes(x=time, y=reading))+
+  geom_line()+
+  scale_x_date(breaks="month", labels=date_format("%b"))
+
+library(dplyr)
+df_test1 = df_test %>% mutate(time = as.Date(time))
+
+
+save(df_test,file="dataframe_stackexcahnge.Rda")
+```
+
+```{r}
+library(dplyr)
+df_test_june= df_test %>% mutate(time = as.Date(time))
+
+df_test_june <- subset(df_test_june, time >= "2015-06-01 00:00:00")
+
+library(zoo)
+temp.zoo<-zoo(df_test_june$reading,df_test_june$time)
+m.av<-rollmean(temp.zoo, 240,fill = list(NA, NULL, NA))
+df_test_june$amb.av=coredata(m.av)
+
+
+p <- ggplot(df_test_june, aes(time, reading))
+p + geom_point(alpha = 1/4, colour = "white")+
+  geom_line(aes(time,amb.av),color="black") 
+
+q <- ggplot(df_test_june, aes(time, reading))
+q <- q + geom_point(alpha = 1/4, colour = "red")
+q + geom_line(aes(time,amb.av),color="#7F0019",size=1) + scale_x_date(breaks="month", labels=date_format("%b"))+
+  theme(axis.line = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank(),
+    axis.ticks.x=element_blank(),
+    plot.background = element_rect(fill = "#FAF7EB"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank())
+
+ggsave(file="test_june.svg", plot=q, width=10, height=8)
+
+```
+
